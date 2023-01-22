@@ -6,10 +6,6 @@ import Todo from "../model/dbModel";
 class TodoBluePrint {
 
     constructor( public activity?: string, public name?: string, public id?: string){
-
-    }
-    delete(id: string){
-        Todo.findByIdAndDelete(id)
     }
 }
 

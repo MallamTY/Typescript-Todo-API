@@ -7,7 +7,7 @@ const router = express.Router();
 router.post('/create-todo', createTodo)
 
 router.get('/', (req, res, next) => {
-    res.json(`Welcome to my Page ..................`)
+    res.json (`Welcome to my Page ..................`)
 }
 );
 
