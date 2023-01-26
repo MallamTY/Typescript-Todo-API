@@ -13,6 +13,15 @@ class TodoBluePrint {
     }
 }
 
+interface returnedArrayTodo {
+    length: number
+}
+
+type returnTodo = object | null | object[];
+
+
+
+
 export const createTodo: RequestHandler = async (req, res, next) => {
    try {
     const {name, activity} = req.body
@@ -35,7 +44,7 @@ export const getSingleTodo: RequestHandler = async(req, res, next) => {
     try {
         const {id}= req.params;
 
-        let todoDB = await Todo.findById(id)
+        let todoDB: returnTodo = await Todo.findById(id)
         if (todoDB) {
             return res.status(200).json({
                 status: `Success ...............`,
@@ -58,7 +67,7 @@ export const getSingleTodo: RequestHandler = async(req, res, next) => {
 
 export const getTodo: RequestHandler = async(req, res, next) => {
     try {
-        let todoDB = await Todo.find();
+        let todoDB: returnedArrayTodo = await Todo.find();
         if (todoDB.length > 0) {
             return res.status(200).json({
                 status: `Succss ..........`,
@@ -79,13 +88,29 @@ export const getTodo: RequestHandler = async(req, res, next) => {
     }
 }
 
-// export const deleteTodo: RequestHandler = async(req, res, next) {
-//     try {
-        
-//     } catch () {
-        
-//     }
-// }
+export const deleteTodo: RequestHandler = async(req, res, next) => {
+    try {
+        const {id} = req.params
+
+        let deletedTodo = await Todo.findByIdAndDelete(id)
+        if (deletedTodo) {
+            return res.status(200).json({
+                status: `Success .........`,
+                message: `Task with id: ${id} has been removed from our database ......`
+            })
+        }
+        return res.status(201).json({
+            status: `Failed !!!!!!!!!`,
+            message: `Task with id: ${id} not found in our database ......`
+        })
+    } 
+    catch (error: any) {
+        res.status(500).json({
+            status: `Failed !!!!!!!!!!!`,
+            mesage: error.message
+        }) 
+    }
+}
 
 // export const getTodo: RequestHandler = (req, res, next) => {
 //     res.send(`Welcome to my Page ..................`)

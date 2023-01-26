@@ -1,5 +1,5 @@
 import express from 'express';
-import {createTodo, getSingleTodo, getTodo} from '../controller/todoController'
+import {createTodo, deleteTodo, getSingleTodo, getTodo} from '../controller/todoController'
 
 
 const router = express.Router();
@@ -12,7 +12,7 @@ router.route('/').get(getTodo);
 
 router.patch('/');
 
-router.delete('/');
+router.route('/:id').delete(deleteTodo);
 
 
 export default router;
