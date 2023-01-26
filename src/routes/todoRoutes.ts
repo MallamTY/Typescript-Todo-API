@@ -1,15 +1,14 @@
 import express from 'express';
-import {createTodo} from '../controller/todoController'
+import {createTodo, getSingleTodo, getTodo} from '../controller/todoController'
 
 
 const router = express.Router();
 
 router.post('/create-todo', createTodo)
 
-router.get('/', (req, res, next) => {
-    res.json (`Welcome to my Page ..................`)
-}
-);
+router.route('/:id').get(getSingleTodo);
+
+router.route('/').get(getTodo);
 
 router.patch('/');
 
