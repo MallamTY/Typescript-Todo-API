@@ -1,4 +1,6 @@
 import { RequestHandler} from "express";
+import mongoose from "mongoose";
+import { nextTick } from "process";
 import Todo from "../model/dbModel";
 
 
@@ -112,7 +114,46 @@ export const deleteTodo: RequestHandler = async(req, res, next) => {
     }
 }
 
-// export const getTodo: RequestHandler = (req, res, next) => {
-//     res.send(`Welcome to my Page ..................`)
-// }
+export const updateTodo: RequestHandler = async(req, res, next) => {
+    try {
+        
+        const {params: {id},
+                body
+                             } = req;
+    
+        if(!id) {
+            return res.status(201).json({
+                status: `Failed !!!!!!!!!`,
+                message: `Todo ID must be specified`
+            }) 
+        }
+        else{
+            if(!mongoose.Types.ObjectId.isValid(id)) {
+                return res.status(201).json({
+                    status: `Failed !!!!!!!!!`,
+                    message: `${id} is not a valid object id required !!!!!!`
+                }) 
+            }
+            const updatedTodo: returnTodo = await Todo.findByIdAndUpdate(id, body, {new: true})
+            if (updatedTodo) {
+                
+                return res.status(200).json({
+                    status: `Success !!!!!!!!!`,
+                    message: `Todo with id: ${id} has been updated successfully`,
+                    updatedTodo
+                    
+                })
+            }
+            return res.status(201).json({
+                status: `Failed !!!!!!!!!`,
+                message: `Todo with id: ${id} is not found in our database`
+            })
+        }
+    } catch (error: any) {
+        res.status(500).json({
+            status: `Failed !!!!!!!!!!!`,
+            message: error.message
+        })
+    }
+}
 
