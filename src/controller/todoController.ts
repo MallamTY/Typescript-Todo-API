@@ -1,7 +1,6 @@
 import { RequestHandler} from "express";
 import mongoose from "mongoose";
-import { nextTick } from "process";
-import Todo from "../model/dbModel";
+import Todo from "../model/todoModel";
 
 
 
@@ -31,7 +30,7 @@ export const createTodo: RequestHandler = async (req, res, next) => {
     console.log(todoDB);
     
     todoDB = await Todo.create(todoDB)
-    res.status(200).json({
+    res.status(201).json({
         message: `Todo successfully created`,
         todoDB
     })
@@ -53,7 +52,7 @@ export const getSingleTodo: RequestHandler = async(req, res, next) => {
                 todoDB
             })  
         }
-        return res.status(201).json({
+        return res.status(404).json({
             status: `Success ...............`,
             message: `Task with task id: ${id} is not found in the database !!!`
         })
@@ -76,7 +75,7 @@ export const getTodo: RequestHandler = async(req, res, next) => {
                 todoDB
             })
         }else {
-            return res.status(201).json({
+            return res.status(404).json({
                 message: `No task found in your list`
             })
         }
@@ -101,7 +100,7 @@ export const deleteTodo: RequestHandler = async(req, res, next) => {
                 message: `Task with id: ${id} has been removed from our database ......`
             })
         }
-        return res.status(201).json({
+        return res.status(404).json({
             status: `Failed !!!!!!!!!`,
             message: `Task with id: ${id} not found in our database ......`
         })
@@ -129,7 +128,7 @@ export const updateTodo: RequestHandler = async(req, res, next) => {
         }
         else{
             if(!mongoose.Types.ObjectId.isValid(id)) {
-                return res.status(201).json({
+                return res.status(400).json({
                     status: `Failed !!!!!!!!!`,
                     message: `${id} is not a valid object id required !!!!!!`
                 }) 
@@ -144,7 +143,7 @@ export const updateTodo: RequestHandler = async(req, res, next) => {
                     
                 })
             }
-            return res.status(201).json({
+            return res.status(404).json({
                 status: `Failed !!!!!!!!!`,
                 message: `Todo with id: ${id} is not found in our database`
             })

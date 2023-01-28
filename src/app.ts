@@ -1,5 +1,6 @@
 import express, {Request, Response, NextFunction} from 'express';
 import todoRoutes from './routes/todoRoutes'
+import userRoutes from './routes/userRoute';
 import { MONGO_URI, configType, PORT} from './assessories/configuration'
 import connectDB from './dbConnect/dbConnect';
 import morgan from 'morgan';
@@ -9,7 +10,8 @@ const app = express();
 app.use(cors());
 app.use(morgan('common'));
 app.use(express.json());
-app.use('/todo', todoRoutes);
+app.use('/todo/v1', todoRoutes);
+app.use('/todo/v1', userRoutes)
 
 
 
