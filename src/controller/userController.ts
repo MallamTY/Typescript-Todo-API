@@ -2,6 +2,7 @@ import User from '../model/userModel';
 import bcrypt from 'bcrypt';
 import validator from 'validator';
 import { RequestHandler } from 'express';
+import { tokenGenerator } from '../utility/token';
 
 
 
@@ -55,7 +56,7 @@ export const registerUser: RequestHandler = async(req, res, next) => {
         })
     }
 
-    dbUser = await User.create({...req.body})
+    dbUser = await User.create({...req.body, password: hashedPassword, confirmpassword: hashedConfirmedPassword})
     return res.status(201).json({
         status: `Success !!!!!`,
         message: `Account successfully created !!!!`,
@@ -68,4 +69,73 @@ export const registerUser: RequestHandler = async(req, res, next) => {
         message: `Unable to create an accounting due to server error !!!!!!!!!`
     })
    }
+}
+
+export const signIn: RequestHandler = async(req, res, next) => {
+    type tokenType = string | undefined;
+
+
+    interface loginType {
+        username: string;
+        email: string;
+        password: string
+        id: string
+    }
+    let username: string;
+    let password: string;
+    let email: string;
+try {
+    
+    const reqbody: loginType = req.body
+    username = reqbody.username;
+    email = reqbody.email;
+    password = reqbody.password;
+
+    if(!(username || email) && !password) {
+        return res.status(406).json({
+            status: `Failed !!!!!`,
+            message: `All fields must be filled`
+        })
+    }
+
+    let userDB: loginType | null = await User.findOne({$or: [{username}, {email}]})
+    if (!userDB) {
+        return res.status(404).json({
+            status: `Success ...............`,
+            message: `Invalid credentials !!!!!!`
+        })
+    }
+    const match = await bcrypt.compare(password, userDB.password);
+    
+    if (!match) {
+        return res.status(404).json({
+            status: `Failed ...............`,
+            message: `Invalid email or password !!!!!!!!!`
+        })
+    }
+    
+    if (email) {
+        const token: tokenType = tokenGenerator(userDB.id, email);
+        return res.status(200).json({
+            status: `Success !!!!!`,
+            message: `Login successful !!!!`,
+            token
+        })
+    }
+    else if(username) {
+        const token: tokenType = tokenGenerator(userDB.id, '', username)
+        return res.status(200).json({
+            status: `Success !!!!!`,
+            message: `Login successful !!!!`,
+            token
+        })
+    }
+    
+} catch (error) {
+    res.status(500).json({
+        status: `Failed !!!!!!!!!!!!`,
+        message: `Unable to create an accounting due to server error !!!!!!!!!`
+    })
+}
+
 }
